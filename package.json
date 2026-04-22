@@ -3,7 +3,7 @@
   "displayName": "Commit Message Generator",
   "description": "Generate Conventional Commits messages from staged diffs using any OpenAI-compatible endpoint (OpenRouter, Ollama, LM Studio, vLLM, Together, Groq).",
   "version": "0.1.0",
-  "publisher": "your-publisher",
+  "publisher": "Hirale",
   "license": "MIT",
   "icon": "media/icon.png",
   "galleryBanner": {
@@ -31,12 +31,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-owner/vscode-commitMessageGenerator"
+    "url": "https://github.com/hirale/vscode-commitgen"
   },
   "bugs": {
-    "url": "https://github.com/your-owner/vscode-commitMessageGenerator/issues"
+    "url": "https://github.com/hirale/vscode-commitgen/issues"
   },
-  "homepage": "https://github.com/your-owner/vscode-commitMessageGenerator#readme",
+  "homepage": "https://github.com/hirale/vscode-commitgen#readme",
   "main": "./dist/extension.js",
   "activationEvents": [
     "onCommand:commitgen.generate",
