@@ -67,7 +67,13 @@
         {
           "command": "commitgen.generate",
           "when": "scmProvider == git",
-          "group": "navigation"
+          "group": "navigation@1"
+        }
+      ],
+      "scm/inputBox": [
+        {
+          "command": "commitgen.generate",
+          "when": "scmProvider == git"
         }
       ],
       "commandPalette": [
