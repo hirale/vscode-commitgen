@@ -1,0 +1,187 @@
+{
+  "name": "commit-message-generator",
+  "displayName": "Commit Message Generator",
+  "description": "Generate Conventional Commits messages from staged diffs using any OpenAI-compatible endpoint (OpenRouter, Ollama, LM Studio, vLLM, Together, Groq).",
+  "version": "0.1.0",
+  "publisher": "your-publisher",
+  "license": "MIT",
+  "icon": "media/icon.png",
+  "galleryBanner": {
+    "color": "#1f2937",
+    "theme": "dark"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "SCM Providers",
+    "Machine Learning",
+    "Other"
+  ],
+  "keywords": [
+    "git",
+    "commit",
+    "conventional-commits",
+    "openai",
+    "openrouter",
+    "ollama",
+    "llm",
+    "ai",
+    "commit-message"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-owner/vscode-commitMessageGenerator"
+  },
+  "bugs": {
+    "url": "https://github.com/your-owner/vscode-commitMessageGenerator/issues"
+  },
+  "homepage": "https://github.com/your-owner/vscode-commitMessageGenerator#readme",
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onCommand:commitgen.generate",
+    "onCommand:commitgen.setApiKey",
+    "onCommand:commitgen.selectModel"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "commitgen.generate",
+        "title": "Generate Commit Message",
+        "category": "Commit Gen",
+        "icon": "$(sparkle)"
+      },
+      {
+        "command": "commitgen.setApiKey",
+        "title": "Set API Key",
+        "category": "Commit Gen"
+      },
+      {
+        "command": "commitgen.selectModel",
+        "title": "Select Model",
+        "category": "Commit Gen"
+      }
+    ],
+    "menus": {
+      "scm/title": [
+        {
+          "command": "commitgen.generate",
+          "when": "scmProvider == git",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        { "command": "commitgen.generate" },
+        { "command": "commitgen.setApiKey" },
+        { "command": "commitgen.selectModel" }
+      ]
+    },
+    "configuration": {
+      "title": "Commit Message Generator",
+      "properties": {
+        "commitgen.provider": {
+          "type": "string",
+          "enum": ["openai-compatible"],
+          "default": "openai-compatible",
+          "description": "LLM provider backend."
+        },
+        "commitgen.baseUrl": {
+          "type": "string",
+          "default": "https://api.openai.com/v1",
+          "description": "OpenAI-compatible base URL.\nExamples:\n  https://openrouter.ai/api/v1 (OpenRouter)\n  http://localhost:11434/v1 (Ollama)\n  http://localhost:1234/v1 (LM Studio)"
+        },
+        "commitgen.model": {
+          "type": "string",
+          "default": "gpt-4o-mini",
+          "description": "Model ID to use. For OpenRouter free tier try: deepseek/deepseek-chat-v3.1:free or meta-llama/llama-3.3-70b-instruct:free"
+        },
+        "commitgen.language": {
+          "type": "string",
+          "default": "English",
+          "description": "Output language for the commit message."
+        },
+        "commitgen.conventionalCommits": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enforce Conventional Commits format (type(scope): subject)."
+        },
+        "commitgen.includeRecentCommits": {
+          "type": "boolean",
+          "default": false,
+          "description": "Include recent commit subjects as context for the LLM."
+        },
+        "commitgen.recentCommitsCount": {
+          "type": "integer",
+          "default": 5,
+          "minimum": 0,
+          "maximum": 50,
+          "description": "Number of recent commits to include as context."
+        },
+        "commitgen.maxDiffChars": {
+          "type": "integer",
+          "default": 16000,
+          "minimum": 1000,
+          "description": "Maximum characters of staged diff to send. Larger diffs are truncated proportionally per file."
+        },
+        "commitgen.temperature": {
+          "type": "number",
+          "default": 0.2,
+          "minimum": 0,
+          "maximum": 2,
+          "description": "Sampling temperature."
+        },
+        "commitgen.maxOutputTokens": {
+          "type": "integer",
+          "default": 512,
+          "minimum": 64,
+          "description": "Maximum tokens in the generated commit message."
+        },
+        "commitgen.stream": {
+          "type": "boolean",
+          "default": true,
+          "description": "Stream tokens directly into the Source Control input box as they arrive."
+        },
+        "commitgen.systemPromptOverride": {
+          "type": "string",
+          "default": "",
+          "description": "Custom system prompt. Leave empty to use the built-in Conventional Commits prompt."
+        },
+        "commitgen.extraHeaders": {
+          "type": "object",
+          "default": {},
+          "description": "Extra HTTP headers to send with every request. Useful for OpenRouter attribution:\n  { \"HTTP-Referer\": \"https://yoursite.com\", \"X-Title\": \"Your App\" }"
+        },
+        "commitgen.requestTimeoutMs": {
+          "type": "integer",
+          "default": 60000,
+          "minimum": 1000,
+          "description": "Request timeout in milliseconds."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "build": "node esbuild.config.mjs --production",
+    "watch": "node esbuild.config.mjs --watch",
+    "compile-tests": "tsc -p . --outDir out",
+    "pretest": "npm run compile-tests && npm run build",
+    "lint": "eslint src --ext .ts",
+    "test": "node ./out/test/runTest.js",
+    "package": "vsce package",
+    "publish-marketplace": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^20.17.30",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "@vscode/test-electron": "^2.4.1",
+    "@vscode/vsce": "^3.3.2",
+    "esbuild": "^0.25.2",
+    "eslint": "^8.57.1",
+    "mocha": "^10.8.2",
+    "typescript": "^5.8.3"
+  }
+}
