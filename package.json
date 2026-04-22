@@ -70,12 +70,6 @@
           "group": "navigation@1"
         }
       ],
-      "scm/inputBox": [
-        {
-          "command": "commitgen.generate",
-          "when": "scmProvider == git"
-        }
-      ],
       "commandPalette": [
         { "command": "commitgen.generate" },
         { "command": "commitgen.setApiKey" },
