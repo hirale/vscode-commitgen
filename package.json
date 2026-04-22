@@ -1,5 +1,5 @@
 {
-  "name": "commit-message-generator",
+  "name": "commitgen",
   "displayName": "Commit Message Generator",
   "description": "Generate Conventional Commits messages from staged diffs using any OpenAI-compatible endpoint (OpenRouter, Ollama, LM Studio, vLLM, Together, Groq).",
   "version": "0.1.0",
