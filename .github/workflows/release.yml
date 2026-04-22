@@ -23,10 +23,3 @@ jobs:
         with:
           files: '*.vsix'
           generate_release_notes: true
-
-      - name: Publish to VS Marketplace
-        run: npx vsce publish -p ${{ secrets.VSCE_PAT }}
-
-      - name: Publish to Open VSX
-        run: npx ovsx publish -p ${{ secrets.OVSX_PAT }}
-        continue-on-error: true
