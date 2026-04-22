@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import type { IConfigService } from '../config/ConfigService.js';
+import { buildAuthHeaders } from '../util/httpHeaders.js';
 import { log } from '../util/logger.js';
 
 interface OpenAIModel {
@@ -14,8 +15,7 @@ export function createSelectModelCommand(config: IConfigService): () => Promise<
 
     try {
       const apiKey = await config.getApiKey();
-      const headers: Record<string, string> = { ...cfg.extraHeaders };
-      if (apiKey) headers['Authorization'] = `Bearer ${apiKey}`;
+      const headers = buildAuthHeaders(cfg.extraHeaders, apiKey);
 
       const response = await fetch(`${cfg.baseUrl}/models`, {
         headers,

@@ -10,15 +10,12 @@ export interface GitRepositoryHandle {
 export interface StagedChanges {
   stagedDiff: string;
   filesChanged: string[];
-  repoRoot: string;
 }
 
 export interface IGitService {
   getActiveRepository(preferredUri?: vscode.Uri): Promise<GitRepositoryHandle | undefined>;
   getStagedChanges(repo: GitRepositoryHandle): Promise<StagedChanges>;
   getRecentCommitSubjects(repo: GitRepositoryHandle, count: number): Promise<string[]>;
-  writeCommitMessage(repo: GitRepositoryHandle, message: string): void;
-  appendCommitMessage(repo: GitRepositoryHandle, delta: string): void;
 }
 
 export class GitService implements IGitService {
@@ -58,19 +55,11 @@ export class GitService implements IGitService {
       getStagedDiff(repo.rootFsPath),
       getStagedFilePaths(repo.rootFsPath),
     ]);
-    return { stagedDiff, filesChanged, repoRoot: repo.rootFsPath };
+    return { stagedDiff, filesChanged };
   }
 
   async getRecentCommitSubjects(repo: GitRepositoryHandle, count: number): Promise<string[]> {
     return getRecentCommitSubjects(repo.rootFsPath, count);
-  }
-
-  writeCommitMessage(repo: GitRepositoryHandle, message: string): void {
-    repo.inputBox.value = message;
-  }
-
-  appendCommitMessage(repo: GitRepositoryHandle, delta: string): void {
-    repo.inputBox.value += delta;
   }
 }
 

@@ -34,7 +34,7 @@ Works with **OpenAI**, **OpenRouter** (free tier), **Ollama**, **LM Studio**, **
 "commitgen.baseUrl": "https://openrouter.ai/api/v1",
 "commitgen.model":   "deepseek/deepseek-chat-v3.1:free",
 "commitgen.extraHeaders": {
-  "HTTP-Referer": "https://github.com/your-owner/vscode-commitMessageGenerator",
+  "HTTP-Referer": "https://github.com/hirale/vscode-commitgen",
   "X-Title":      "Commit Message Generator"
 }
 ```
@@ -111,3 +111,9 @@ No API key needed. `ollama pull qwen2.5-coder:7b` first.
 **Diff truncated warning** — Increase `commitgen.maxDiffChars` or stage fewer files at once.
 
 **Ollama times out** — Increase `commitgen.requestTimeoutMs` (default 60s) if the model is slow to load.
+
+---
+
+## Acknowledgements
+
+Inspired by [vscode-commitgen](https://github.com/WoongheeLee/vscode-commitgen) by WoongheeLee.

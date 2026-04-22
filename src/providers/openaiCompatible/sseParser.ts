@@ -55,6 +55,7 @@ export async function* parseSseStream(
     reader.releaseLock();
   }
 
+  // Server closed stream without [DONE] or finish_reason — emit terminal chunk
   yield { delta: '', done: true };
 }
 

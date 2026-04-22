@@ -33,18 +33,23 @@ export class ConfigService implements IConfigService {
   }
 
   async getApiKey(): Promise<string | undefined> {
-    const { provider, baseUrl } = this.read();
-    return this.secrets.get(this.secretKey(provider, baseUrl));
+    return this.secrets.get(this.currentSecretKey());
   }
 
   async setApiKey(key: string): Promise<void> {
-    const { provider, baseUrl } = this.read();
-    await this.secrets.store(this.secretKey(provider, baseUrl), key);
+    await this.secrets.store(this.currentSecretKey(), key);
   }
 
   async clearApiKey(): Promise<void> {
-    const { provider, baseUrl } = this.read();
-    await this.secrets.delete(this.secretKey(provider, baseUrl));
+    await this.secrets.delete(this.currentSecretKey());
+  }
+
+  private currentSecretKey(): string {
+    const cfg = vscode.workspace.getConfiguration('commitgen');
+    return this.secretKey(
+      cfg.get<string>('provider', 'openai-compatible'),
+      cfg.get<string>('baseUrl', 'https://api.openai.com/v1').replace(/\/$/, ''),
+    );
   }
 
   onDidChange(listener: () => void): vscode.Disposable {
@@ -57,7 +62,6 @@ export class ConfigService implements IConfigService {
 
   /** Scope key by provider + baseUrl so switching endpoints doesn't collide. */
   private secretKey(provider: string, baseUrl: string): string {
-    // Simple stable hash to keep key readable but unique per endpoint
     const hash = simpleHash(baseUrl);
     return `commitgen.apiKey.${provider}.${hash}`;
   }
