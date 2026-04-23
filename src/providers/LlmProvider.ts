@@ -40,6 +40,7 @@ export class LlmError extends Error {
     message: string,
     public readonly code: 'auth' | 'rate_limit' | 'server' | 'bad_request' | 'network' | 'aborted' | 'unknown',
     public readonly statusCode?: number,
+    public readonly retryAfterMs?: number,
   ) {
     super(message);
     this.name = 'LlmError';

@@ -99,4 +99,54 @@ suite('OpenAICompatibleProvider', () => {
 
     assert.ok(!('Authorization' in capturedHeaders));
   });
+
+  test('retries once on 429 with Retry-After: 0 and succeeds', async () => {
+    let calls = 0;
+    globalThis.fetch = (async () => {
+      calls++;
+      if (calls === 1) {
+        return new Response('{}', { status: 429, headers: { 'Retry-After': '0' } });
+      }
+      return new Response(JSON.stringify({ choices: [{ message: { content: 'feat: retry ok' } }] }), { status: 200 });
+    }) as typeof fetch;
+
+    const provider = new OpenAICompatibleProvider(BASE_CTX);
+    const chunks = [];
+    for await (const chunk of provider.generate(BASE_REQUEST, neverToken as never)) {
+      chunks.push(chunk);
+    }
+    assert.strictEqual(calls, 2);
+    assert.strictEqual(chunks[0].delta, 'feat: retry ok');
+  });
+
+  test('retries once on 500 and fails with code=server when both attempts fail', async () => {
+    globalThis.fetch = makeFetch(500, { error: { message: 'Internal Server Error' } }) as typeof fetch;
+
+    const provider = new OpenAICompatibleProvider(BASE_CTX);
+    try {
+      for await (const _ of provider.generate(BASE_REQUEST, neverToken as never)) { /* noop */ }
+      assert.fail('Expected LlmError');
+    } catch (err) {
+      assert.ok(err instanceof LlmError);
+      assert.strictEqual(err.code, 'server');
+    }
+  });
+
+  test('does not retry on 401 auth errors', async () => {
+    let calls = 0;
+    globalThis.fetch = (async () => {
+      calls++;
+      return new Response('{}', { status: 401 });
+    }) as typeof fetch;
+
+    const provider = new OpenAICompatibleProvider(BASE_CTX);
+    try {
+      for await (const _ of provider.generate(BASE_REQUEST, neverToken as never)) { /* noop */ }
+      assert.fail('Expected LlmError');
+    } catch (err) {
+      assert.ok(err instanceof LlmError);
+      assert.strictEqual(err.code, 'auth');
+    }
+    assert.strictEqual(calls, 1);
+  });
 });

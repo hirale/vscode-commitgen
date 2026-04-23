@@ -8,6 +8,10 @@ interface OpenAIModel {
   created?: number;
 }
 
+interface ScopeItem extends vscode.QuickPickItem {
+  value: vscode.ConfigurationTarget;
+}
+
 export function createSelectModelCommand(config: IConfigService): () => Promise<void> {
   return async function selectModel() {
     const cfg = config.read();
@@ -55,10 +59,27 @@ export function createSelectModelCommand(config: IConfigService): () => Promise<
 
     if (!picked || picked === cfg.model) return;
 
-    await vscode.workspace
-      .getConfiguration('commitgen')
-      .update('model', picked, vscode.ConfigurationTarget.Global);
+    const vsConfig = vscode.workspace.getConfiguration('commitgen');
+    const inspection = vsConfig.inspect<string>('model');
 
+    let target: vscode.ConfigurationTarget;
+    if (inspection?.workspaceValue !== undefined) {
+      target = vscode.ConfigurationTarget.Workspace;
+    } else if (inspection?.globalValue !== undefined) {
+      target = vscode.ConfigurationTarget.Global;
+    } else {
+      const scopeItems: ScopeItem[] = [
+        { label: 'Workspace', description: 'Save for this workspace only', value: vscode.ConfigurationTarget.Workspace },
+        { label: 'User (Global)', description: 'Save for all workspaces', value: vscode.ConfigurationTarget.Global },
+      ];
+      const scopeChoice = await vscode.window.showQuickPick(scopeItems, {
+        placeHolder: 'Save model setting to…',
+      });
+      if (!scopeChoice) return;
+      target = scopeChoice.value;
+    }
+
+    await vsConfig.update('model', picked, target);
     vscode.window.showInformationMessage(`Model set to ${picked}`);
   };
 }

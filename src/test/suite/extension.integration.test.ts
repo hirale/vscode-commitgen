@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 
 suite('Extension Integration', () => {
   test('extension activates and registers all commands', async () => {
-    const ext = vscode.extensions.getExtension('your-publisher.commit-message-generator');
+    const ext = vscode.extensions.getExtension('Hirale.hirale-commitgen');
     assert.ok(ext, 'Extension not found — is the publisher ID correct?');
 
     if (!ext.isActive) {

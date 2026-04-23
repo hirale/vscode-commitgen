@@ -2,7 +2,7 @@
   "name": "hirale-commitgen",
   "displayName": "CommitGen — AI Commit Messages",
   "description": "Generate Conventional Commits messages from staged diffs using any OpenAI-compatible endpoint (OpenRouter, Ollama, LM Studio, vLLM, Together, Groq).",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "publisher": "Hirale",
   "license": "MIT",
   "icon": "media/icon.png",
@@ -41,7 +41,8 @@
   "activationEvents": [
     "onCommand:commitgen.generate",
     "onCommand:commitgen.setApiKey",
-    "onCommand:commitgen.selectModel"
+    "onCommand:commitgen.selectModel",
+    "onCommand:commitgen.showLog"
   ],
   "contributes": {
     "commands": [
@@ -60,6 +61,11 @@
         "command": "commitgen.selectModel",
         "title": "Select Model",
         "category": "Commit Gen"
+      },
+      {
+        "command": "commitgen.showLog",
+        "title": "Show Output Log",
+        "category": "Commit Gen"
       }
     ],
     "menus": {
@@ -73,7 +79,8 @@
       "commandPalette": [
         { "command": "commitgen.generate" },
         { "command": "commitgen.setApiKey" },
-        { "command": "commitgen.selectModel" }
+        { "command": "commitgen.selectModel" },
+        { "command": "commitgen.showLog" }
       ]
     },
     "configuration": {

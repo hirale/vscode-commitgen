@@ -43,4 +43,21 @@ suite('diffTruncator', () => {
     const result = truncateDiff(diff, 50);
     assert.strictEqual(result.originalChars, diff.length);
   });
+
+  test('does not split on "--- " context lines inside a file diff', () => {
+    // A markdown file whose diff contains "--- " as a context line (horizontal rule)
+    const diff = `diff --git a/README.md b/README.md
+--- a/README.md
++++ b/README.md
+@@ -1,4 +1,4 @@
+ # Title
+
+--- old heading
++## new heading
+`;
+    const result = truncateDiff(diff, diff.length + 100);
+    assert.strictEqual(result.truncated, false);
+    // Should be exactly 1 file section — the "--- " context line must not create a second split
+    assert.strictEqual(result.diff, diff);
+  });
 });

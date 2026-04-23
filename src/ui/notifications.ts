@@ -33,14 +33,6 @@ export async function handleGenerateError(err: unknown): Promise<void> {
     return;
   }
 
-  if (err instanceof NoStagedChangesError) {
-    const action = await vscode.window.showInformationMessage(err.message, 'Open Source Control');
-    if (action === 'Open Source Control') {
-      await vscode.commands.executeCommand('workbench.view.scm');
-    }
-    return;
-  }
-
   if (err instanceof MissingApiKeyError) {
     return; // User cancelled the key prompt — silent
   }
@@ -52,13 +44,6 @@ export class NoRepositoryError extends Error {
   constructor() {
     super('Open a folder containing a Git repository to generate a commit message.');
     this.name = 'NoRepositoryError';
-  }
-}
-
-export class NoStagedChangesError extends Error {
-  constructor() {
-    super('No staged changes. Stage files with git add first.');
-    this.name = 'NoStagedChangesError';
   }
 }
 

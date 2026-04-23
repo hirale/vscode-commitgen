@@ -10,7 +10,6 @@ import {
   handleGenerateError,
   MissingApiKeyError,
   NoRepositoryError,
-  NoStagedChangesError,
 } from '../ui/notifications.js';
 
 export function createGenerateCommand(
@@ -23,8 +22,28 @@ export function createGenerateCommand(
       const repo = await git.getActiveRepository();
       if (!repo) throw new NoRepositoryError();
 
-      const { stagedDiff, filesChanged } = await git.getStagedChanges(repo);
-      if (!stagedDiff.trim()) throw new NoStagedChangesError();
+      let { stagedDiff, filesChanged } = await git.getStagedChanges(repo);
+      let progressTitle = 'Generating commit message…';
+
+      if (!stagedDiff.trim()) {
+        const action = await vscode.window.showInformationMessage(
+          'No staged changes. Stage files with git add first.',
+          'Generate from unstaged changes',
+          'Open Source Control',
+        );
+        if (action !== 'Generate from unstaged changes') {
+          if (action === 'Open Source Control') await vscode.commands.executeCommand('workbench.view.scm');
+          return;
+        }
+        const unstagedChanges = await git.getUnstagedChanges(repo);
+        if (!unstagedChanges.stagedDiff.trim()) {
+          vscode.window.showInformationMessage('No unstaged changes either.');
+          return;
+        }
+        stagedDiff = unstagedChanges.stagedDiff;
+        filesChanged = unstagedChanges.filesChanged;
+        progressTitle = 'Generating commit message from unstaged changes…';
+      }
 
       const cfg = config.read();
 
@@ -69,17 +88,31 @@ export function createGenerateCommand(
 
       log(`Generating with model ${cfg.model} via ${cfg.baseUrl}`);
 
-      const sink = new StreamingSink(repo);
+      // Use a single CancellationTokenSource that both the progress cancel button
+      // and the StreamingSink (user edits input box) can cancel.
+      const sinkCts = new vscode.CancellationTokenSource();
+      const sink = new StreamingSink(repo, () => sinkCts.cancel());
+      let usageInfo: { promptTokens?: number; completionTokens?: number } | undefined;
 
-      await withProgress('Generating commit message…', async (token) => {
-        for await (const chunk of provider.generate(request, token)) {
-          if (token.isCancellationRequested) break;
-          sink.append(chunk.delta);
-          if (chunk.done) break;
+      await withProgress(progressTitle, async (progressToken) => {
+        const pd = progressToken.onCancellationRequested(() => sinkCts.cancel());
+        try {
+          for await (const chunk of provider.generate(request, sinkCts.token)) {
+            if (sinkCts.token.isCancellationRequested) break;
+            sink.append(chunk.delta);
+            if (chunk.usage) usageInfo = chunk.usage;
+            if (chunk.done) break;
+          }
+          sink.finalize();
+        } finally {
+          pd.dispose();
+          sinkCts.dispose();
         }
-        sink.finalize();
       });
 
+      if (usageInfo) {
+        log(`Usage — prompt: ${usageInfo.promptTokens ?? '?'}, completion: ${usageInfo.completionTokens ?? '?'} tokens`);
+      }
       log('Generation complete.');
     } catch (err) {
       await handleGenerateError(err);

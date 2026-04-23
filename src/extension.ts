@@ -6,7 +6,7 @@ import { createOpenAICompatibleProvider } from './providers/openaiCompatible/Ope
 import { createGenerateCommand } from './commands/generateCommitMessage.js';
 import { createSetApiKeyCommand } from './commands/setApiKey.js';
 import { createSelectModelCommand } from './commands/selectModel.js';
-import { log, disposeLogger } from './util/logger.js';
+import { log, showLog, disposeLogger } from './util/logger.js';
 
 export function activate(context: vscode.ExtensionContext): void {
   log('Commit Message Generator activated.');
@@ -27,6 +27,7 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.commands.registerCommand('commitgen.generate', createGenerateCommand(git, config, registry)),
     vscode.commands.registerCommand('commitgen.setApiKey', createSetApiKeyCommand(config)),
     vscode.commands.registerCommand('commitgen.selectModel', createSelectModelCommand(config)),
+    vscode.commands.registerCommand('commitgen.showLog', showLog),
   );
 }
 

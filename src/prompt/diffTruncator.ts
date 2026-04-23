@@ -53,7 +53,7 @@ function splitIntoFileDiffs(diff: string): string[] {
   let current: string[] = [];
 
   for (const line of lines) {
-    if (line.startsWith('diff --git ') || line.startsWith('--- ')) {
+    if (line.startsWith('diff --git ')) {
       if (current.length > 0) {
         files.push(current.join('\n') + '\n');
         current = [];
