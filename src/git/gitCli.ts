@@ -23,10 +23,15 @@ export async function getStagedFilePaths(repoRoot: string): Promise<string[]> {
 
 export async function getRecentCommitSubjects(repoRoot: string, count: number): Promise<string[]> {
   if (count <= 0) return [];
-  const { stdout } = await execFileAsync(
-    'git',
-    ['-C', repoRoot, 'log', `-${count}`, '--pretty=format:%s'],
-    { maxBuffer: 1024 * 1024 },
-  );
-  return stdout.split('\n').map((l) => l.trim()).filter(Boolean);
+  try {
+    const { stdout } = await execFileAsync(
+      'git',
+      ['-C', repoRoot, 'log', `-${count}`, '--pretty=format:%s'],
+      { maxBuffer: 1024 * 1024 },
+    );
+    return stdout.split('\n').map((l) => l.trim()).filter(Boolean);
+  } catch {
+    // Empty repo (no commits yet) or other git log failure — treat as no history
+    return [];
+  }
 }

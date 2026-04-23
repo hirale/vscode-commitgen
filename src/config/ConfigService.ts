@@ -13,7 +13,8 @@ export class ConfigService implements IConfigService {
   constructor(private readonly secrets: vscode.SecretStorage) {}
 
   read(): ResolvedConfig {
-    const cfg = vscode.workspace.getConfiguration('commitgen');
+    const resource = vscode.workspace.workspaceFolders?.[0]?.uri;
+    const cfg = vscode.workspace.getConfiguration('commitgen', resource);
     return {
       provider: cfg.get<string>('provider', 'openai-compatible'),
       baseUrl: cfg.get<string>('baseUrl', 'https://api.openai.com/v1').replace(/\/$/, ''),

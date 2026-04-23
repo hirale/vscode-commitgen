@@ -83,31 +83,37 @@
           "type": "string",
           "enum": ["openai-compatible"],
           "default": "openai-compatible",
+          "scope": "resource",
           "description": "LLM provider backend."
         },
         "commitgen.baseUrl": {
           "type": "string",
           "default": "https://api.openai.com/v1",
+          "scope": "resource",
           "description": "OpenAI-compatible base URL.\nExamples:\n  https://openrouter.ai/api/v1 (OpenRouter)\n  http://localhost:11434/v1 (Ollama)\n  http://localhost:1234/v1 (LM Studio)"
         },
         "commitgen.model": {
           "type": "string",
           "default": "gpt-4o-mini",
+          "scope": "resource",
           "description": "Model ID to use. For OpenRouter free tier try: deepseek/deepseek-chat-v3.1:free or meta-llama/llama-3.3-70b-instruct:free"
         },
         "commitgen.language": {
           "type": "string",
           "default": "English",
+          "scope": "resource",
           "description": "Output language for the commit message."
         },
         "commitgen.conventionalCommits": {
           "type": "boolean",
           "default": true,
+          "scope": "resource",
           "description": "Enforce Conventional Commits format (type(scope): subject)."
         },
         "commitgen.includeRecentCommits": {
           "type": "boolean",
           "default": false,
+          "scope": "resource",
           "description": "Include recent commit subjects as context for the LLM."
         },
         "commitgen.recentCommitsCount": {
@@ -115,12 +121,14 @@
           "default": 5,
           "minimum": 0,
           "maximum": 50,
+          "scope": "resource",
           "description": "Number of recent commits to include as context."
         },
         "commitgen.maxDiffChars": {
           "type": "integer",
           "default": 16000,
           "minimum": 1000,
+          "scope": "resource",
           "description": "Maximum characters of staged diff to send. Larger diffs are truncated proportionally per file."
         },
         "commitgen.temperature": {
@@ -128,33 +136,39 @@
           "default": 0.2,
           "minimum": 0,
           "maximum": 2,
+          "scope": "resource",
           "description": "Sampling temperature."
         },
         "commitgen.maxOutputTokens": {
           "type": "integer",
           "default": 512,
           "minimum": 64,
+          "scope": "resource",
           "description": "Maximum tokens in the generated commit message."
         },
         "commitgen.stream": {
           "type": "boolean",
           "default": true,
+          "scope": "resource",
           "description": "Stream tokens directly into the Source Control input box as they arrive."
         },
         "commitgen.systemPromptOverride": {
           "type": "string",
           "default": "",
+          "scope": "resource",
           "description": "Custom system prompt. Leave empty to use the built-in Conventional Commits prompt."
         },
         "commitgen.extraHeaders": {
           "type": "object",
           "default": {},
+          "scope": "resource",
           "description": "Extra HTTP headers to send with every request. Useful for OpenRouter attribution:\n  { \"HTTP-Referer\": \"https://yoursite.com\", \"X-Title\": \"Your App\" }"
         },
         "commitgen.requestTimeoutMs": {
           "type": "integer",
           "default": 60000,
           "minimum": 1000,
+          "scope": "resource",
           "description": "Request timeout in milliseconds."
         }
       }
