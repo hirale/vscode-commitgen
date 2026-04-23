@@ -2,7 +2,7 @@
   "name": "hirale-commitgen",
   "displayName": "CommitGen — AI Commit Messages",
   "description": "Generate Conventional Commits messages from staged diffs using any OpenAI-compatible endpoint (OpenRouter, Ollama, LM Studio, vLLM, Together, Groq).",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "Hirale",
   "license": "MIT",
   "icon": "media/icon.png",
