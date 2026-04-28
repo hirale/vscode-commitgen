@@ -17,6 +17,7 @@ const BASE_CONFIG: ResolvedConfig = {
   systemPromptOverride: '',
   extraHeaders: {},
   requestTimeoutMs: 60000,
+  promptForCloseRef: false,
 };
 
 const SAMPLE_DIFF = `diff --git a/src/foo.ts b/src/foo.ts
