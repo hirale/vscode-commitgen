@@ -13,4 +13,5 @@ export interface ResolvedConfig {
   systemPromptOverride: string;
   extraHeaders: Record<string, string>;
   requestTimeoutMs: number;
+  promptForCloseRef: boolean;
 }

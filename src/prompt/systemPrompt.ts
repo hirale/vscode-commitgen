@@ -5,6 +5,8 @@ export function buildSystemPrompt(opts: {
 }): string {
   if (opts.override?.trim()) return opts.override.trim();
 
+  const languageInstruction = `Write the ENTIRE commit message — subject line, body, and any footers — in ${opts.language}. Do NOT mix languages.`;
+
   const format = opts.conventionalCommits
     ? `Follow the Conventional Commits 1.0.0 specification (https://www.conventionalcommits.org):
 
@@ -21,15 +23,14 @@ Rules:
   - !: append to flag a breaking change, e.g. feat!: or feat(api)!:
   - description: imperative mood, no period at end; subject line max 72 chars
   - body: optional context separated by a blank line, wrapped at 72 chars
-  - Breaking changes: include a BREAKING CHANGE: footer when explanation is needed
-      BREAKING CHANGE: <what changed and why>
-  - Other footers follow git trailer format, e.g. Refs: #123, Co-authored-by: …
+  - Breaking changes: add a BREAKING CHANGE: footer only when a breaking change is present
+  - Do NOT add Refs:, Co-authored-by:, or other footers unless the diff explicitly justifies them
   - Output ONLY the commit message — no explanation, no markdown code fences.`
     : `Write a concise, clear commit message in imperative mood.
   - Max 72 chars for the subject line
   - Output ONLY the commit message, no explanation, no markdown code blocks.`;
 
   return `You are an expert software engineer writing a git commit message.
-${format}
-Respond in ${opts.language}.`;
+${languageInstruction}
+${format}`;
 }

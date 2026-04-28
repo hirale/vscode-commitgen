@@ -50,6 +50,19 @@ export async function getUnstagedFilePaths(repoRoot: string): Promise<string[]> 
   return parseLines(stdout);
 }
 
+export async function getCurrentBranch(repoRoot: string): Promise<string> {
+  try {
+    const { stdout } = await execFileAsync(
+      'git',
+      ['-C', repoRoot, 'rev-parse', '--abbrev-ref', 'HEAD'],
+      { maxBuffer: 1024 * 1024 },
+    );
+    return stdout.trim();
+  } catch {
+    return '';
+  }
+}
+
 export async function getRecentCommitSubjects(repoRoot: string, count: number): Promise<string[]> {
   if (count <= 0) return [];
   try {

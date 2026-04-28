@@ -30,6 +30,7 @@ export class ConfigService implements IConfigService {
       systemPromptOverride: cfg.get<string>('systemPromptOverride', ''),
       extraHeaders: cfg.get<Record<string, string>>('extraHeaders', {}),
       requestTimeoutMs: cfg.get<number>('requestTimeoutMs', 60000),
+      promptForCloseRef: cfg.get<boolean>('promptForCloseRef', false),
     };
   }
 

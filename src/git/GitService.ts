@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { getStagedDiff, getStagedFilePaths, getUnstagedDiff, getUnstagedFilePaths, getRecentCommitSubjects } from './gitCli.js';
+import { getStagedDiff, getStagedFilePaths, getUnstagedDiff, getUnstagedFilePaths, getRecentCommitSubjects, getCurrentBranch } from './gitCli.js';
 
 export interface GitRepositoryHandle {
   readonly rootUri: vscode.Uri;
@@ -17,6 +17,7 @@ export interface IGitService {
   getStagedChanges(repo: GitRepositoryHandle): Promise<StagedChanges>;
   getUnstagedChanges(repo: GitRepositoryHandle): Promise<StagedChanges>;
   getRecentCommitSubjects(repo: GitRepositoryHandle, count: number): Promise<string[]>;
+  getCurrentBranch(repo: GitRepositoryHandle): Promise<string>;
 }
 
 export class GitService implements IGitService {
@@ -69,6 +70,10 @@ export class GitService implements IGitService {
 
   async getRecentCommitSubjects(repo: GitRepositoryHandle, count: number): Promise<string[]> {
     return getRecentCommitSubjects(repo.rootFsPath, count);
+  }
+
+  async getCurrentBranch(repo: GitRepositoryHandle): Promise<string> {
+    return getCurrentBranch(repo.rootFsPath);
   }
 }
 

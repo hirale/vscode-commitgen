@@ -12,6 +12,16 @@ import {
   NoRepositoryError,
 } from '../ui/notifications.js';
 
+function extractIssueFromBranch(branch: string): string | undefined {
+  const match = branch.match(/(?:^|[/_-])(\d+)(?:[/_-]|$)/);
+  return match?.[1];
+}
+
+function parseCloseRef(input: string): string | undefined {
+  const clean = input.trim().replace(/^#/, '');
+  return /^\d+$/.test(clean) ? clean : undefined;
+}
+
 export function createGenerateCommand(
   git: IGitService,
   config: IConfigService,
@@ -71,6 +81,19 @@ export function createGenerateCommand(
           ? await git.getRecentCommitSubjects(repo, cfg.recentCommitsCount)
           : [];
 
+      let closeRef: string | undefined;
+      if (cfg.promptForCloseRef) {
+        const branch = await git.getCurrentBranch(repo);
+        const detected = extractIssueFromBranch(branch);
+        const input = await vscode.window.showInputBox({
+          prompt: 'Closes issue or PR? (leave blank to skip)',
+          placeHolder: '#123',
+          value: detected ?? '',
+          ignoreFocusOut: true,
+        });
+        closeRef = input !== undefined ? parseCloseRef(input) : undefined;
+      }
+
       const { request, wasTruncated } = buildPrompt({ stagedDiff, filesChanged, recentCommits, config: cfg });
 
       if (wasTruncated) {
@@ -104,6 +127,9 @@ export function createGenerateCommand(
             if (chunk.done) break;
           }
           sink.finalize();
+          if (closeRef && !sink.isAborted) {
+            repo.inputBox.value = repo.inputBox.value.trimEnd() + '\n\nCloses: #' + closeRef;
+          }
         } finally {
           pd.dispose();
           sinkCts.dispose();

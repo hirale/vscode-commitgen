@@ -2,7 +2,7 @@
   "name": "hirale-commitgen",
   "displayName": "CommitGen — AI Commit Messages",
   "description": "Generate Conventional Commits messages from staged diffs using any OpenAI-compatible endpoint (OpenRouter, Ollama, LM Studio, vLLM, Together, Groq).",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "publisher": "Hirale",
   "license": "MIT",
   "icon": "media/icon.png",
@@ -177,6 +177,12 @@
           "minimum": 1000,
           "scope": "resource",
           "description": "Request timeout in milliseconds."
+        },
+        "commitgen.promptForCloseRef": {
+          "type": "boolean",
+          "default": false,
+          "scope": "resource",
+          "description": "Before generating, ask which issue or PR this commit closes. The current branch name is parsed for an issue number and pre-filled automatically."
         }
       }
     }
